@@ -16,7 +16,7 @@ def load_data(sub_sample=True, add_outlier=False):
         usecols=[0],
         converters={0: lambda x: 0 if b"Male" in x else 1},
     )
-    # Convert to metric system
+    # Convert to metric system (in meters and kg)
     height *= 0.025
     weight *= 0.454
 
@@ -47,7 +47,7 @@ def build_model_data(height, weight):
     y = weight
     x = height
     num_samples = len(y)
-    tx = np.c_[np.ones(num_samples), x]
+    tx = np.c_[np.ones(num_samples), x] #np.c_ concatenates along the second axis
     return y, tx
 
 
@@ -85,13 +85,14 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
         <DO-SOMETHING>
     """
     data_size = len(y)  # NUmber of data points.
-    batch_size = min(data_size, batch_size)  # Limit the possible size of the batch.
+    batch_size = min(data_size, batch_size)  # s'assure que la taille du lot ne dépasse pas la taille totale des données.
     max_batches = int(
         data_size / batch_size
-    )  # The maximum amount of non-overlapping batches that can be extracted from the data.
+    )  # calcule le nombre maximum de mini-lots non chevauchants pouvant être extraits des données sans inclure des points de données restants.
     remainder = (
         data_size - max_batches * batch_size
-    )  # Points that would be excluded if no overlap is allowed.
+    ) # calcule le nombre de points de données qui ne sont pas inclus si les lots ne se chevauchent pas 
+    # (ces points de "reste" peuvent être utilisés pour ajouter un peu de variation dans le processus de mini-lots).
 
     if shuffle:
         # Generate an array of indexes indicating the start of each batch
