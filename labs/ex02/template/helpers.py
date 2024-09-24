@@ -14,7 +14,7 @@ def load_data(sub_sample=True, add_outlier=False):
         delimiter=",",
         skip_header=1,
         usecols=[0],
-        converters={0: lambda x: 0 if "Male" in str(x) else 1},
+        converters={0: lambda x: 0 if "Male" in str(x) else 1} # discrete features
     )
     # Convert to metric system (in meters and kg)
     height *= 0.025
@@ -26,9 +26,11 @@ def load_data(sub_sample=True, add_outlier=False):
         weight = weight[::50]
 
     if add_outlier:
-        # outlier experiment
+        # outlier experiment (as if no conversion)
         height = np.concatenate([height, [1.1, 1.2]])
-        weight = np.concatenate([weight, [51.5 / 0.454, 55.3 / 0.454]])
+        weight = np.concatenate([weight, [1000, 2076]])
+
+        # weight = np.concatenate([weight, [51.5 / 0.454, 55.3 / 0.454]])
 
     return height, weight, gender
 
