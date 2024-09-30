@@ -58,3 +58,50 @@ def build_model_data(height, weight):
     num_samples = len(y)
     tx = np.c_[np.ones(num_samples), x]
     return y, tx
+
+
+# from costs import *
+
+def compute_loss(y, tx, w):
+    """Calculate the loss using either MSE (or MAE).
+
+    Args:
+        y: numpy array of shape=(N, )
+        tx: numpy array of shape=(N,2)
+        w: numpy array of shape=(2,). The vector of model parameters.
+
+    Returns:
+        the value of the loss (a scalar), corresponding to the input parameters w.
+    """
+    data_size = len(y)  # NUmber of data points.
+    e = y - np.matmul(tx,w)
+    # print(e.shape)
+    e_s = np.square(e)
+    # print(e_s.shape)
+    sigma = np.sum(e_s)
+    # print(sigma.shape)
+    loss = 1/(2*data_size) * sigma
+    return loss
+
+def grid_search(y, tx, grid_w0, grid_w1):
+    """Algorithm for grid search.
+
+    Args:
+        y: numpy array of shape=(N, )
+        tx: numpy array of shape=(N,2)
+        grid_w0: numpy array of shape=(num_grid_pts_w0, ). A 1D array containing num_grid_pts_w0 values of parameter w0 to be tested in the grid search.
+        grid_w1: numpy array of shape=(num_grid_pts_w1, ). A 1D array containing num_grid_pts_w1 values of parameter w1 to be tested in the grid search.
+
+    Returns:
+        losses: numpy array of shape=(num_grid_pts_w0, num_grid_pts_w1). A 2D array containing the loss value for each combination of w0 and w1
+    """
+
+    losses = np.zeros((len(grid_w0), len(grid_w1)))
+    
+    for i, w0 in enumerate(grid_w0):
+        for j, w1 in enumerate(grid_w1):
+            w = np.transpose(np.array([w0, w1]))
+            loss = compute_loss(y, tx, w)
+            losses[i, j] = loss
+
+    return losses
